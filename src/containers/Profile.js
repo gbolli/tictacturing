@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Container, Name, GameListHeader, GameList, GameRecord, Column, ColumnLabels} from '../styled/Profile'
-
+import Relay from 'react-relay'
 
 class Profile extends Component {
 
@@ -85,4 +85,16 @@ class Profile extends Component {
   }
 }
 
-export default Profile
+export default Relay.createContainer(
+  Profile, {
+    fragments: {
+      viewer: () => Relay.QL`
+        fragment on Viewer {
+          user {
+            id
+          }
+        }
+      `,  // will send null if not user logged in
+    }
+  }
+)
