@@ -1,9 +1,9 @@
 import Auth0Lock from 'auth0-lock'
 import Relay from 'react-relay'
-const authDomain = 'gbolli.auth0.com'
-const clientId = 'RpmrSX9OQq7YoAiS6c7RYqZHJfJS8eI6'
 import CreateUser from '../mutations/CreateUser'
 import SigninUser from '../mutations/SigninUser'
+const authDomain = 'gbolli.auth0.com'
+const clientId = 'RpmrSX9OQq7YoAiS6c7RYqZHJfJS8eI6'
 
 class AuthService {
   constructor() {
@@ -120,14 +120,13 @@ class AuthService {
             resolve(response)
           },
           onFailure: (response) => {
+            console.log(response)
             reject(response)
           }
         }
-
-        )
+      )
     })
   }
-
 }
 
 const auth = new AuthService()

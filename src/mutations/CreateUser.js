@@ -49,5 +49,5 @@ export default class CreateUser extends Relay.Mutation {
       }
     ]
   }
+  
 }
-
