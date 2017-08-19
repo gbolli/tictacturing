@@ -1,6 +1,9 @@
 import Auth0Lock from 'auth0-lock'
+import Relay from 'react-relay'
 const authDomain = 'gbolli.auth0.com'
 const clientId = 'RpmrSX9OQq7YoAiS6c7RYqZHJfJS8eI6'
+import CreateUser from '../mutations/CreateUser'
+import SigninUser from '../mutations/SigninUser'
 
 class AuthService {
   constructor() {
@@ -18,7 +21,26 @@ class AuthService {
   }
 
   authProcess = (authResult) => {
-    console.log(authResult)
+    let {
+      email,
+      exp
+    } = authResult.idTokenPayload
+    const idToken = authResult.idToken
+
+    this.signinUser({
+      idToken,
+      email,
+      exp
+    }).then(
+      success => success,
+      rejected => {
+        this.createUser({
+          idToken,
+          email,
+          exp
+        }).then()
+      }
+    )
   }
 
   showLock() {
@@ -66,6 +88,46 @@ class AuthService {
     localStorage.removeItem('exp')
     window.location.reload()  // browser refresh page
   }
+
+  createUser = (authFields) => {
+    return new Promise( (resolve, reject) => {
+      Relay.Store.commitUpdate(
+        new CreateUser({
+          email: authFields.email,
+          idToken: authFields.idToken
+        }), {
+          onSuccess: (response) => {
+            this.signinUser(authFields)
+            resolve(response)
+          },
+          onFailure: (response) => {
+            console.log('CreateUser Error', response)
+            reject(response)
+          }
+        }
+      )
+    })
+  }
+
+  signinUser = (authFields) => {
+    return new Promise( (resolve, reject) => {
+      Relay.Store.commitUpdate(
+        new SigninUser({
+          idToken: authFields.idToken
+        }), {
+          onSuccess: (response) => {
+            this.setToken(authFields)
+            resolve(response)
+          },
+          onFailure: (response) => {
+            reject(response)
+          }
+        }
+
+        )
+    })
+  }
+
 }
 
 const auth = new AuthService()
