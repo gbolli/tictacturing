@@ -71,7 +71,7 @@ class AuthService {
       return true
     }
   }
-  
+
   getToken() {
     let idToken = localStorage.getItem('idToken')
     if (this.isCurrent() && idToken) {
@@ -120,7 +120,7 @@ class AuthService {
             resolve(response)
           },
           onFailure: (response) => {
-            console.log(response)
+            console.log('SigninUser Error', response)
             reject(response)
           }
         }
